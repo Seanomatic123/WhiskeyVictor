@@ -31,7 +31,7 @@ class WebView : AppCompatActivity() {
 
     private val tag = "WebViewActivity"
 
-    private lateinit var upload: ValueCallback<Array<Uri>>
+    private var upload: ValueCallback<Array<Uri>>? = null
 
     private lateinit var binding: ActivityWebViewBinding
 
@@ -75,15 +75,15 @@ class WebView : AppCompatActivity() {
         webViewMain.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
                 webView: WebView?,
-                filePathCallback: ValueCallback<Array<Uri>>?,
-                fileChooserParams: FileChooserParams?
+                filePathCallback: ValueCallback<Array<Uri>>,
+                fileChooserParams: FileChooserParams
             ): Boolean {
                 super.onShowFileChooser(webView, filePathCallback, fileChooserParams)
-                val intent = fileChooserParams?.createIntent()?.apply {
-                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+                val intent = fileChooserParams.createIntent().apply {
+                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                 }
-                upload = filePathCallback!!
-                startActivityForResult(intent!!, 101)
+                upload = filePathCallback
+                startActivityForResult(intent, 101)
                 return true
             }
         }
@@ -117,7 +117,16 @@ class WebView : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 101) {
-            upload.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, data))
+            val results = data?.let {
+                if (it.clipData != null) {
+                    val count = it.clipData!!.itemCount
+                    Array(count) { i -> it.clipData!!.getItemAt(i).uri }
+                } else {
+                    it.data?.let { uri -> arrayOf(uri) }
+                }
+            }
+            upload?.onReceiveValue(results)
+            upload = null
         }
     }
 
