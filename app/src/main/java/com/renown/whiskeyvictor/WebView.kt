@@ -1,8 +1,6 @@
 package com.renown.whiskeyvictor
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -13,19 +11,13 @@ import android.view.View
 import android.webkit.CookieManager
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.renown.whiskeyvictor.databinding.ActivityWebViewBinding
-import kotlinx.coroutines.launch
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
 
 class WebView : AppCompatActivity() {
 
