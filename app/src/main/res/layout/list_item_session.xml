@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.flexbox.FlexboxLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="12dp"
+    app:flexDirection="column"
+    app:justifyContent="center">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="12dp">
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/list_item_session_rounded_background"
+            app:flexDirection="row"
+            app:justifyContent="space_between"
+            app:alignItems="center">
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/list_item_session_flex_box"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:layout_flexGrow="1"
+                android:padding="20dp"
+                app:justifyContent="center"
+                app:flexDirection="column">
+
+                <TextView
+                    android:id="@+id/list_item_session_user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp"
+                    android:textSize="20sp"
+                    android:text="@string/session_user_name"/>
+
+                <TextView
+                    android:id="@+id/list_item_session_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="2dp"
+                    android:textSize="14sp"
+                    android:text="@string/session_url"/>
+
+                <TextView
+                    android:id="@+id/list_item_session_cookies"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:text="@string/session_cookies_string"/>
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <LinearLayout
+                android:layout_width="1dp"
+                android:layout_height="85dp"
+                app:layout_flexGrow="0"
+                android:orientation="vertical"
+                android:background="@color/black_AA" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/list_item_session_delete_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingVertical="24dp"
+                android:paddingHorizontal="20dp"
+                app:flexDirection="row"
+                app:justifyContent="center"
+                app:alignItems="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/delete_list_item_session_button"
+                    android:textColor="@color/red"/>
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/delete_session_icon"/>
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</com.google.android.flexbox.FlexboxLayout>

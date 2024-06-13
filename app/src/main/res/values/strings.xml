@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Link Opener</string>
+    <string name="enter_new_link">Enter New Link</string>
+    <string name="open_link">Open</string>
+    <string name="open_existing_sessions">Open Existing Sessions</string>
+    <string name="session_url">Session URL</string>
+    <string name="session_cookies_string">Session Cookies String</string>
+    <string name="delete_existing_sessions">Delete Existing Sessions</string>
+    <string name="enter_title">Enter Title</string>
+    <string name="session_user_name">Session Title</string>
+    <string name="empty_existing_sessions_placeholder">There are no saved sessions.</string>
+    <string name="splash_screen_app_tag_line">OPEN AND MANAGE LINKS</string>
+    <string name="delete_list_item_session_button">Delete</string>
+    <string name="create_new_session_button">Create New Session</string>
+    <string name="existing_sessions_title">Existing Sessions</string>
+</resources>
