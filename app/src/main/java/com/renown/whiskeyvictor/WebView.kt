@@ -1,6 +1,8 @@
 package com.renown.whiskeyvictor
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -9,6 +11,10 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.webkit.CookieManager
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -24,6 +30,8 @@ import java.io.InputStreamReader
 class WebView : AppCompatActivity() {
 
     private val tag = "WebViewActivity"
+
+    private lateinit var upload: ValueCallback<Array<Uri>>
 
     private lateinit var binding: ActivityWebViewBinding
 
@@ -44,7 +52,10 @@ class WebView : AppCompatActivity() {
 
         if (newLink!= null && url != null && userName != null) {
             webViewMain.webViewClient = WebViewClient()
+            webViewMain.webChromeClient = WebChromeClient()
             webViewMain.settings.javaScriptEnabled = true
+            webViewMain.settings.allowFileAccess = true
+            webViewMain.settings.userAgentString = "Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"
             webViewMain.loadUrl(url)
         } else if (existingSession != null) {
             webViewSaveLinkButton.visibility = View.GONE
@@ -54,23 +65,30 @@ class WebView : AppCompatActivity() {
             val cookieManager = CookieManager.getInstance()
             cookieManager.setCookie(existingSession.url, cookieString)
             webViewMain.webViewClient = WebViewClient()
+            webViewMain.webChromeClient = WebChromeClient()
             webViewMain.settings.javaScriptEnabled = true
+            webViewMain.settings.allowFileAccess = true
+            webViewMain.settings.userAgentString = "Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"
             webViewMain.loadUrl(existingSession.url)
         }
 
+        webViewMain.webChromeClient = object : WebChromeClient() {
+            override fun onShowFileChooser(
+                webView: WebView?,
+                filePathCallback: ValueCallback<Array<Uri>>?,
+                fileChooserParams: FileChooserParams?
+            ): Boolean {
+                super.onShowFileChooser(webView, filePathCallback, fileChooserParams)
+                val intent = fileChooserParams?.createIntent()?.apply {
+                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+                }
+                upload = filePathCallback!!
+                startActivityForResult(intent!!, 101)
+                return true
+            }
+        }
+
         webViewCloseButton.setOnClickListener {
-//            val cookiesJson = getCookiesAsJson(url ?: "")
-//            Log.d(tag, "Cookies Json: $cookiesJson")
-//            if(!newLink.isNullOrEmpty() && !url.isNullOrEmpty() && !userName.isNullOrEmpty() && cookiesJson.isNotEmpty()) {
-//                val session = Session(userName = userName, url = url, cookiesJson = cookiesJson)
-//                writeSessionToFile(this@WebView, session, "sessions_file.txt")
-//                Log.d(tag, "Session written to file: $session")
-//            } else {
-//                Log.d(tag, "Empty URL or cookies or already saved session, not saving session.")
-//            }
-
-
-
             clearCookies()
             webViewMain.clearCache(true)
             webViewMain.clearHistory()
@@ -93,6 +111,13 @@ class WebView : AppCompatActivity() {
                 Log.d(tag, "Empty URL or cookies or already saved session, not saving session.")
                 Toast.makeText(this, "This session has already been saved.", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 101) {
+            upload.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, data))
         }
     }
 
