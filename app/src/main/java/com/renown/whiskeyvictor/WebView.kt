@@ -17,7 +17,9 @@ import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.renown.whiskeyvictor.databinding.ActivityWebViewBinding
+import java.io.BufferedReader
 import java.io.IOException
+import java.io.InputStreamReader
 
 class WebView : AppCompatActivity() {
 
@@ -50,7 +52,8 @@ class WebView : AppCompatActivity() {
             webViewMain.settings.userAgentString = "Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"
             webViewMain.loadUrl(url)
         } else if (existingSession != null) {
-            webViewSaveLinkButton.visibility = View.GONE
+//            webViewSaveLinkButton.visibility = View.GONE
+            webViewSaveLinkButton.text = "Update Link"
             val cookieString = newSetCookies(existingSession)
             Log.d(tag, cookieString)
             Log.d(tag, existingSession.url)
@@ -92,13 +95,39 @@ class WebView : AppCompatActivity() {
         webViewSaveLinkButton.setOnClickListener {
             val cookiesJson = getCookiesAsJson(url ?: "")
             Log.d(tag, "Cookies Json: $cookiesJson")
-            if(!newLink.isNullOrEmpty() && !url.isNullOrEmpty() && !userName.isNullOrEmpty() && cookiesJson.isNotEmpty()) {
+            Log.d(tag, "Url: $url")
+            Log.d(tag, "Title: $userName")
+
+            if(!url.isNullOrEmpty() && !userName.isNullOrEmpty() && cookiesJson.isNotEmpty()) {
+                var newSession = false
                 val session = Session(userName = userName, url = url, cookiesJson = cookiesJson)
-                writeSessionToFile(this@WebView, session, "sessions_file.txt")
+                val existingSessions = readSessionsFromFile(this, "sessions_file.txt").toMutableList()
+                val sessionIndex = existingSessions.indexOfFirst { it.userName == userName }
+
+                if (sessionIndex != -1) {
+                    // Update the existing session
+                    newSession = false
+                    existingSessions[sessionIndex] = session
+                    Log.d(tag, "Session updated in file: $session")
+                } else {
+                    // Add a new session
+                    newSession = true
+                    existingSessions.add(session)
+                    Log.d(tag, "Session written to file: $session")
+                }
+
+                overwriteSessionToFile(this@WebView, existingSessions, "sessions_file.txt")
                 Log.d(tag, "Session written to file: $session")
-                Toast.makeText(this, "This session has been saved", Toast.LENGTH_SHORT).show()
-                webViewSaveLinkButton.isEnabled = false
-                webViewSaveLinkButton.alpha = 0.5f
+
+                if (newSession) {
+                    Toast.makeText(this, "This session has been saved", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "This session has been updated", Toast.LENGTH_SHORT).show()
+                }
+                webViewSaveLinkButton.text = "Update Link"
+
+//                webViewSaveLinkButton.isEnabled = false
+//                webViewSaveLinkButton.alpha = 0.5f
             } else {
                 Log.d(tag, "Empty URL or cookies or already saved session, not saving session.")
                 Toast.makeText(this, "This session has already been saved.", Toast.LENGTH_SHORT).show()
@@ -130,6 +159,7 @@ class WebView : AppCompatActivity() {
             Cookie(name = parts[0], value = parts.getOrElse(1) { "" })
         }
         val gson = Gson()
+        Log.d(tag, cookiesList.toString())
         return gson.toJson(cookiesList)
     }
 
@@ -146,7 +176,7 @@ class WebView : AppCompatActivity() {
         return cookies.joinToString(",") { "${it.name}=${it.value}" }
     }
 
-    fun writeSessionToFile(context: Context, session: Session, fileName: String) {
+    private fun writeSessionToFile(context: Context, session: Session, fileName: String) {
         val gson = Gson()
         val sessionJson = gson.toJson(session)
         try {
@@ -157,6 +187,40 @@ class WebView : AppCompatActivity() {
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    private fun overwriteSessionToFile(context: Context, sessions: List<Session>, fileName: String) {
+        val gson = Gson()
+        val sessionsJson = sessions.joinToString(separator = "\n") { gson.toJson(it) }
+        try {
+            val fileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
+            fileOutputStream.write(sessionsJson.toByteArray())
+            fileOutputStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun readSessionsFromFile(context: Context, fileName: String): MutableList<Session> {
+        val sessions = mutableListOf<Session>()
+        try {
+            val fileInputStream = context.openFileInput(fileName)
+            val inputStreamReader = InputStreamReader(fileInputStream)
+            val bufferedReader = BufferedReader(inputStreamReader)
+            var line: String? = bufferedReader.readLine()
+            val gson = Gson()
+            while (line != null) {
+                val session = gson.fromJson(line, Session::class.java)
+                sessions.add(session)
+                line = bufferedReader.readLine()
+            }
+            bufferedReader.close()
+            inputStreamReader.close()
+            fileInputStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return sessions
     }
 
     override fun onBackPressed() {

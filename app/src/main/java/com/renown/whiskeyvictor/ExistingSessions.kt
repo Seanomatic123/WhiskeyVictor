@@ -75,6 +75,8 @@ class ExistingSessions : AppCompatActivity() {
                 override fun onSessionClicked(session: Session, adapterPosition: Int?) {
                     val intent = Intent(applicationContext, WebView::class.java).apply {
                         putExtra("existingSession", Gson().toJson(session))
+                        putExtra("url", session.url)
+                        putExtra("userName", session.userName)
                     }
                     startActivity(intent)
                 }
