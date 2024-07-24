@@ -29,17 +29,44 @@
                 android:layout_height="32dp"
                 android:src="@drawable/close_icon"/>
 
-            <Button
-                android:id="@+id/web_view_save_link_button"
+            <EditText
+                android:id="@+id/web_view_title_edit_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="2dp"
-                android:layout_marginHorizontal="4dp"
-                android:background="@drawable/web_view_gradient_button_rounded_background"
-                app:backgroundTint="@null"
-                android:padding="0dp"
-                android:text="Save Link"
-                android:textSize="10sp"/>
+                android:gravity="center"
+                android:textColorHint="@color/black_AA"
+                android:minWidth="100dp"
+                android:maxWidth="100dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:hint="Title"
+                android:textSize="10sp"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/web_view_refresh_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    app:layout_alignSelf="flex_start"
+                    android:src="@drawable/close_icon"/>
+
+                <Button
+                    android:id="@+id/web_view_save_link_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="2dp"
+                    android:layout_marginHorizontal="4dp"
+                    android:background="@drawable/web_view_gradient_button_rounded_background"
+                    app:backgroundTint="@null"
+                    android:padding="0dp"
+                    android:text="Save Link"
+                    android:textSize="10sp"/>
+
+            </LinearLayout>
 
         </com.google.android.flexbox.FlexboxLayout>
 

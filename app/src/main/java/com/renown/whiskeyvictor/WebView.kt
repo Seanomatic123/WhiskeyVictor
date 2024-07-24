@@ -44,6 +44,8 @@ class WebView : AppCompatActivity() {
         val existingSessionJson = intent.getStringExtra("existingSession")
         val existingSession = Gson().fromJson(existingSessionJson, Session::class.java)
 
+        binding.webViewTitleEditText.setText(userName)
+
         if (newLink!= null && url != null && userName != null) {
             webViewMain.webViewClient = WebViewClient()
             webViewMain.webChromeClient = WebChromeClient()
@@ -53,8 +55,9 @@ class WebView : AppCompatActivity() {
             webViewMain.settings.userAgentString = "Mozilla/5.0 (Linux; U; Android 4.0.3; ko-kr; LG-L160L Build/IML74K) AppleWebkit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"
             webViewMain.loadUrl(url)
         } else if (existingSession != null) {
-//            webViewSaveLinkButton.visibility = View.GONE
-            webViewSaveLinkButton.text = "Update Link"
+            webViewSaveLinkButton.isEnabled = false
+            webViewSaveLinkButton.visibility = View.GONE
+//            webViewSaveLinkButton.text = "Update Link"
             val cookieString = newSetCookies(existingSession)
             Log.d(tag, cookieString)
             Log.d(tag, existingSession.url)
@@ -102,34 +105,40 @@ class WebView : AppCompatActivity() {
 
             if(!url.isNullOrEmpty() && !userName.isNullOrEmpty() && cookiesJson.isNotEmpty()) {
                 var newSession = false
+                val editedUserName = binding.webViewTitleEditText.text.toString()
                 val session = Session(userName = userName, url = url, cookiesJson = cookiesJson)
                 val existingSessions = readSessionsFromFile(this, "sessions_file.txt").toMutableList()
-                val sessionIndex = existingSessions.indexOfFirst { it.userName == userName }
 
-                if (sessionIndex != -1) {
-                    // Update the existing session
-                    newSession = false
-                    existingSessions[sessionIndex] = session
-                    Log.d(tag, "Session updated in file: $session")
-                } else {
-                    // Add a new session
-                    newSession = true
-                    existingSessions.add(session)
-                    Log.d(tag, "Session written to file: $session")
-                }
+                newSession = true
+                existingSessions.add(session)
+                Log.d(tag, "Session written to file: $session")
+                Toast.makeText(this, "This session has been saved", Toast.LENGTH_SHORT).show()
+
+//                val sessionIndex = existingSessions.indexOfFirst { it.userName == userName }
+//                if (sessionIndex != -1) {
+//                    // Update the existing session
+//                    newSession = false
+//                    existingSessions[sessionIndex] = session
+//                    Log.d(tag, "Session updated in file: $session")
+//                } else {
+//                    // Add a new session
+//                    newSession = true
+//                    existingSessions.add(session)
+//                    Log.d(tag, "Session written to file: $session")
+//                }
 
                 overwriteSessionToFile(this@WebView, existingSessions, "sessions_file.txt")
                 Log.d(tag, "Session written to file: $session")
 
-                if (newSession) {
-                    Toast.makeText(this, "This session has been saved", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "This session has been updated", Toast.LENGTH_SHORT).show()
-                }
-                webViewSaveLinkButton.text = "Update Link"
+//                if (newSession) {
+//                    Toast.makeText(this, "This session has been saved", Toast.LENGTH_SHORT).show()
+//                } else {
+//                    Toast.makeText(this, "This session has been updated", Toast.LENGTH_SHORT).show()
+//                }
+//                webViewSaveLinkButton.text = "Update Link"
 
-//                webViewSaveLinkButton.isEnabled = false
-//                webViewSaveLinkButton.alpha = 0.5f
+                webViewSaveLinkButton.isEnabled = false
+                webViewSaveLinkButton.alpha = 0.5f
             } else {
                 Log.d(tag, "Empty URL or cookies or already saved session, not saving session.")
                 Toast.makeText(this, "This session has already been saved.", Toast.LENGTH_SHORT).show()
