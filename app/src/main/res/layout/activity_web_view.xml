@@ -52,7 +52,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     app:layout_alignSelf="flex_start"
-                    android:src="@drawable/close_icon"/>
+                    android:src="@drawable/refresh_icon"/>
 
                 <Button
                     android:id="@+id/web_view_save_link_button"
