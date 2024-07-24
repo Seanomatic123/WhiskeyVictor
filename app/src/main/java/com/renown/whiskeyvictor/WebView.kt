@@ -37,6 +37,7 @@ class WebView : AppCompatActivity() {
 
         val webViewSaveLinkButton = binding.webViewSaveLinkButton
         val webViewCloseButton = binding.webViewCloseButton
+        val webViewRefreshButton = binding.webViewRefreshButton
         val webViewMain = binding.webViewMain
         val newLink = intent.getStringExtra("newLink")
         val url = intent.getStringExtra("url")
@@ -143,6 +144,10 @@ class WebView : AppCompatActivity() {
                 Log.d(tag, "Empty URL or cookies or already saved session, not saving session.")
                 Toast.makeText(this, "This session has already been saved.", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        webViewRefreshButton.setOnClickListener {
+            webViewMain.reload()
         }
     }
 
