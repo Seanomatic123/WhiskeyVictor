@@ -69,6 +69,7 @@ class ExistingSessions : AppCompatActivity() {
 
         filteredSessionList = sessionList.toMutableList()
 
+        existingSessionsRecyclerView.layoutManager = LinearLayoutManager(this@ExistingSessions)
         val sessionAdapter = SessionAdapter(this, filteredSessionList)
         existingSessionsRecyclerView.adapter = sessionAdapter.apply {
             sessionAdapterClickCallback = object: SessionAdapterClickCallback {
@@ -88,7 +89,7 @@ class ExistingSessions : AppCompatActivity() {
                 }
             }
         }
-        existingSessionsRecyclerView.layoutManager = LinearLayoutManager(this)
+
 
         deleteSessionCancelButton.setOnClickListener {
             existingSessionDeleteConfirmation.visibility = View.GONE
